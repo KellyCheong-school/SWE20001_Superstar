@@ -1,0 +1,43 @@
+/* Manager Form container */
+.form-container {
+    width: 300px;
+    margin: 0 auto;
+  }
+  
+ /* Form title */
+ .form-container h2 {
+    margin-top: 0; /* Add margin-top to remove default spacing */
+}
+
+  /* Form labels */
+  .form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  /* Form inputs */
+  .form-container input[type="text"],
+  .form-container input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  /* Submit button */
+  .form-container input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Submit button hover effect */
+  .form-container input[type="submit"]:hover {
+    background-color: #45a049;
+  }

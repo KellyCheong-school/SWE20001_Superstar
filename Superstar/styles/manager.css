@@ -1,0 +1,92 @@
+/* Manager Page Styles */
+.manager {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .manager h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .manager form {
+    margin-bottom: 20px;
+  }
+  
+  .manager select,
+  .manager input[type="text"],
+  .manager input[type="submit"] {
+    padding: 8px;
+    font-size: 16px;
+  }
+  
+  .manager select {
+    width: 200px;
+  }
+  
+  .manager input[type="text"] {
+    width: 250px;
+  }
+  
+  .manager input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .manager input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  
+  .manager table {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+  }
+  
+  .manager .order-table th,
+  .manager .order-table td {
+    padding: 5px;
+    border: 1px solid black;
+  }
+  
+  .manager .order-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .manager .order-table td {
+    text-align: center;
+  }
+  
+  .manager .status-select {
+    padding: 5px;
+  }
+  
+  .manager .status-update-btn,
+  .manager .cancel-btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .manager .status-update-btn {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .manager .status-update-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .manager .cancel-btn {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .manager .cancel-btn:hover {
+    background-color: #d32f2f;
+  }
