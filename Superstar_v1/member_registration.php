@@ -174,7 +174,6 @@
                                     <div class="form-group">
                                         <div class="form-outline datepicker">
                                             <input type="date" class="form-control" id="dob" name="dob"
-                                                pattern="[1-3][0-9]/[0-1][0-9]/[1-2][0-9]{3}"
                                                 placeholder="Birth date (dd/mm/yyyy)" required />
                                         </div>
                                     </div>

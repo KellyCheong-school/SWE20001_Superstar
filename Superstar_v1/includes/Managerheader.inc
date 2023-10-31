@@ -3,11 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-
-
-    <title>bs4 navbar with dropdown animations - Bootdey.com</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <style type="text/css">
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800');
         @import url('https://fonts.googleapis.com/css?family=Lobster');
@@ -20,6 +18,7 @@
             font-family: 'Open Sans', sans-serif;
             font-size: 1.6rem;
             font-weight: 400;
+            background: linear-gradient(90deg, rgba(14,44,63,1) 0%, rgba(88,121,135,1) 35%, rgba(118,131,137,1) 100%);
         }
 
         h1 {
@@ -42,7 +41,7 @@
 
         .button-primary {
             position: relative;
-            background-color: #6bb9f3;
+            background-color: #fbceb5;
             color: #fff;
             font-size: 1.8rem;
             font-weight: 700;
@@ -51,7 +50,7 @@
         }
 
         .button-primary:hover {
-            color: #6bb9f3;
+            color: #fbceb5;
             text-decoration: none;
         }
 
@@ -215,7 +214,7 @@
 
         .navbar .dropdown-menu .dropdown-item:hover {
             background: transparent;
-            color: #6bb9f3;
+            color: #fbceb5;
         }
 
         .navbar .dropdown-menu .dropdown-item::before {
@@ -225,7 +224,7 @@
             left: 0;
             top: 0;
             width: 5px;
-            background-color: #6bb9f3;
+            background-color: #fbceb5;
             opacity: 0;
             transition: opacity 0.2s ease-in;
         }
@@ -242,11 +241,11 @@
         }
 
         .navbar.fixed-top.navbar-dark .navbar-nav .nav-link.active {
-            color: #6bb9f3;
+            color: #fbceb5;
         }
 
         .navbar.fixed-top.navbar-dark .navbar-nav .nav-link::after {
-            background-color: #6bb9f3;
+            background-color: #fbceb5;
         }
 
         .content {
@@ -390,39 +389,48 @@
 </head>
 
 <body>
-    <header class="header-area overlay">
-        <nav class="navbar navbar-expand-md navbar-dark" style="background-color:white; color:#fff;">
-            <div class="container" style="background-color:white">
-                <!-- <a class="navbar-brand" href="#" style="display: flex; align-items: center;">
-                    <img src="images/logo_plane.png" alt="Plane Logo" style="max-height: 200%; object-fit: contain; margin-right: 10px;">
-                    <img src="images/logo_name.png" alt="Name Logo" style="max-height: 200%; object-fit: contain;">
-                </a> -->
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark">
+            <div class="container">
+                <a href="#" class="navbar-brand">
+                <img src="./images/logo.png" style="width: 8%; height: 8%;" alt="Logo">
+                Superstar</a>
                 <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#main-nav">
                     <span class="menu-icon-bar"></span>
                     <span class="menu-icon-bar"></span>
                     <span class="menu-icon-bar"></span>
                 </button>
                 <div id="main-nav" class="collapse navbar-collapse">
-                    <ul class="navbar-nav ml-auto" >
-                        <li><a href="#" class="nav-item nav-link active" style="color:#353535;">Home</a></li>
-                        <li><a href="#" class="nav-item nav-link" style="color:#353535;">About Us</a></li>
-                        <li><a href="#" class="nav-item nav-link" style="color:#353535;">About Us</a></li>
+                    <ul class="navbar-nav ml-auto">
+                        <li><a href="manager.php" class="nav-item nav-link active">Home</a></li>
+                        <li><a href="manager_registration.php" class="nav-item nav-link active">Register</a></li>
                         <li class="dropdown">
-                            <a href="#" class="nav-item nav-link" data-toggle="dropdown" style="color:#353535;">Portfolio</a>
-                            <div class="dropdown-menu" style="background-color:#353535; border: 1px solid transparent;">
-                                <a href="#" class="dropdown-item">Dropdown Item 1</a>
-                                <a href="#" class="dropdown-item">Dropdown Item 2</a>
-                                <a href="#" class="dropdown-item">Dropdown Item 3</a>
-                                <a href="#" class="dropdown-item">Dropdown Item 4</a>
-                                <a href="#" class="dropdown-item">Dropdown Item 5</a>
+                            <a href="#" class="nav-item nav-link" data-toggle="dropdown">Manage</a>
+                            <div class="dropdown-menu">
+                                <a href="create_destination.php" class="dropdown-item">Destination</a>
+                                <a href="create_flight.php" class="dropdown-item">Flight</a>
+                                <a "create_promotions.php" class="dropdown-item">Promotion</a>
                             </div>
                         </li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-item nav-link" data-toggle="dropdown"><?php echo 'Manager:'.htmlspecialchars($username);?> </a>
+                            <div class="dropdown-menu">
+                                <a href="manager_logout.php" class="dropdown-item">Logout</a>
+                            </div>
+                        </li>
+                       
+                       
+                       
+
                     </ul>
                 </div>
             </div>
         </nav>
+
+
+        
     </header>
-  
+
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">

@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <style type="text/css">
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800');
         @import url('https://fonts.googleapis.com/css?family=Lobster');
