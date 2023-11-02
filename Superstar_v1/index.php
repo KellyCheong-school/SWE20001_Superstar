@@ -1,94 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Kelly | 19-Aug-2023 | Start -->
-  </head>
- 
-  <body>
-    <?php include 'includes/header.inc'; ?>
-    
-      <hr>
-      <h2>Destinations</h2>
-      <p>Our flight destinations vary across Asia, including Tokyo in Japan, Bali in Indonesia, Seoul 
-        in South Korea, Bangkok in Thailand, and Singapore. For European destinations, we offer flights to Paris in France, 
-        Rome in Italy, Barcelona in Spain, Amsterdam in the Netherlands, and Berlin in Germany.</p>
-      <p class="hidden">Scroll left for more destinations!</p>
-      <table class="flights">
-        <tr class="flights">
-          <td class="flights">
-            <img class ="destinations" src="images/asia.jpg" alt="asia destination"><br>
-            <a href="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/10/2d/bd/asia.jpg?w=500&h=300&s=1">Image Source</a>
-          </td>
-          <td class="flights">
-            <img class ="destinations" src="images/europe.jpg" alt="europe destination"><br>
-            <a href="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/33/ff/4a/europe.jpg?w=700&h=500&s=1">Image Source</a>
-          </td>
-          <td class="flights">
-            <img class ="destinations" src="images/jungle.jpg" alt="jungle destination"><br>
-            <a href="https://www.insidescience.org/sites/default/files/2020-06/Yasuni-Forest.jpg">Image Source</a>
-          </td>
-        </tr>
-        <tr class="flights">
-          <td><p>Escape to Asia's hidden gems and immerse yourself in breathtaking natural wonders, from pristine beaches to 
-            exotic islands, and discover the rich cultural heritage of local communities. Embark on a journey of a lifetime and 
-            experience the authentic flavors and traditions of Asia while creating memories that will last forever. Book your 
-            flight now and let us take you on an unforgettable adventure to the heart of Asia.</p></td>
-          <td><p>Discover the wonders of Europe's rich heritage and culture, from magnificent ancient buildings to iconic landmarks 
-            and world-class museums. Be enchanted by the vibrant art scenes of Paris, immerse yourself in the history of Rome, or 
-            marvel at the majestic castles of Edinburgh. Book your flight now and embark on a journey of discovery to Europe's most 
-            breathtaking destinations. Let us take you on an unforgettable adventure filled with unparalleled experiences, 
-            exquisite cuisine, and memories that will last a lifetime.</p></td>
-          <td><p>Get ready to immerse yourself in the natural beauty of Southeast Asia. Explore the lush rainforests teeming with 
-            exotic flora and fauna, bask in the sun-kissed beaches, and experience life with the indigenous people. From the bustling 
-            streets of Bangkok to the tranquil rice paddies of Bali, our flights to ASEAN countries will take you on a journey 
-            like no other. Embark on an adventure that will take you off the beaten path and into the heart of Southeast Asia's rich 
-            cultural heritage. Book your flight now and experience the warmth, hospitality, and stunning beauty of this tropical 
-            paradise.</p></td>
-        </tr>
-      </table>
-      
-        <a class="view-more" href="product.php">View Flight Tickets</a>
-      
-        <hr>
-        
-        <div class="slideshow-container" id="slideshow">
-          <h2>Promotions & Notices</h2>
-          <div class="slide">
-            <img class="promotion" src="images/promo1.png" alt="FACES">
-            <p class="promotion-text"><strong>FACES, a faster boarding experience</strong><br>Get ready for a quicker and seamless travel experience.</p>
-          </div>
-        
-          <div class="slide">
-            <img class="promotion" src="images/promo2.png" alt="Raya Fixed Fares">
-            <p class="promotion-text"><strong>Raya Fixed Fares</strong><br>Balik Kampung to Sabah & Sarawak from RM199.</p>
-          </div>
-        
-          <div class="slide">
-            <img class="promotion" src="images/promo3.jpg" alt="Exciting Holiday">
-            <p class="promotion-text"><strong>Pack up! It's go time</strong><br>All-in one-way fare from RM35*.</p>
-          </div>
-        
-          <div class="slide">
-            <img class="promotion" src="images/promo4.jpg" alt="Flight + Hotel Deal">
-            <p class="promotion-text"><strong>Up to 30% off</strong><br>Save more with Flight + Hotel deals.</p>
-          </div>
-        
-          <!-- Dot indicators -->
-        <div class="dot-container">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </div>
 
-        <p>Source: <u><a href="https://www.airasia.com/en/gb">Promotion & Notice in AirAsia Homepage</a></u></p>
-        </div>
-      
-      <a href="#top" class="back-to-top">Back to Top</a><br><br><br>
-      <hr>
-      <?php include 'includes/footer.inc'; ?>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800');
+    @import url('https://fonts.googleapis.com/css?family=Lobster');
 
-      <?php include 'includes/script.inc'; ?>
-    </body>
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .alert-danger {
+      background-color: transparent;
+      background-color: rgba(255, 255, 255, .3);
+    }
+  </style>
+</head>
+
+<body class="img js-fullheight" style="background-image: url(images/bg.jpg);">
+  <?php
+  require_once('settings.php');
+  session_start();
+
+  // Establish a database connection
+  $conn = @mysqli_connect($host, $user, $pwd, $sql_db);
+
+  // Check if the connection was successful
+  if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+  }
+
+  // Check if the form is submitted
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get the entered username and password
+    $enteredUsername = $_POST["username"];
+    $enteredPassword = $_POST["password"];
+
+    // Prepare and execute the SQL statement to retrieve the member information
+    $sql = "SELECT * FROM members WHERE username = '$enteredUsername'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+      $member = mysqli_fetch_assoc($result);
+
+      // Verify the password
+      if ($enteredPassword == $member['password']) {
+        // Password is correct, store the login status in the session
+        $_SESSION['member_id'] = $member['id'];
+        $_SESSION['member_username'] = $member['username'];
+
+        // Redirect to the member web page
+        header("Location: memberPage.php");
+        exit();
+      } else {
+        // Password is incorrect
+        echo "Invalid password.";
+      }
+    } else {
+      // Member not found
+      echo "Member not found.";
+    }
+  }
+
+  // Close the database connection
+  mysqli_close($conn);
+  include 'includes/guestHeader.inc'; 
+  ?>
+  <br><br><br><br>
+
+  <section class="ftco-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 text-center mb-5">
+          <h2 class="heading-section">Member Login Page</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+          <div class="login-wrap p-0">
+            <form action="#" class="signin-form" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+              <div class="form-group">
+                <input style="font-size: 11pt;" type="text" name="username" id="username" class="form-control" placeholder="Username" required>
+              </div>
+              <div class="form-group">
+                <input style="font-size: 11pt;" id="password-field" name="password" type="password" class="form-control" placeholder="Password"
+                  required>
+                <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="form-control btn btn-primary submit px-3">Login</button>
+              </div>
+              <div class="form-group d-md-flex">
+                <div class="w-50">
+                Not a member yet? <a href="member_registration.php" style="color: #fff">Register Now!</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/popper.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
 
 </html>

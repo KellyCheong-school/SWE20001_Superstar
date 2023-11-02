@@ -406,23 +406,16 @@
                 </button>
                 <div id="main-nav" class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
-                        <li><a href="manager.php" class="nav-item nav-link active">Home</a></li>
-                        <li><a href="manager_registration.php" class="nav-item nav-link active">Register</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="nav-item nav-link" data-toggle="dropdown">Manage</a>
+                            <li class="dropdown">
+                            <a href="#" class="nav-item nav-link" data-toggle="dropdown">Login</a>
                             <div class="dropdown-menu">
-                                <a href="create_destination.php" class="dropdown-item">Destination</a>
-                                <a href="create_flight.php" class="dropdown-item">Flight</a>
-                                <a "create_promotions.php" class="dropdown-item">Promotion</a>
+                                <a href="guestPage.php" class="dropdown-item">as Guest</a>
+                                <a href="index.php" class="dropdown-item">as Member</a>
+                                <a href="manager_login.php" class="dropdown-item">as Manager</a>
                             </div>
                         </li>
-                        <li class="dropdown">
-                            <a href="#" class="nav-item nav-link" data-toggle="dropdown"><?php echo 'Manager: '.htmlspecialchars($username);?> </a>
-                            <div class="dropdown-menu">
-                                <a href="manager_logout.php" class="dropdown-item">Logout</a>
-                            </div>
-                        </li>
-                       
+                        <li><a href="index.php" class="nav-item nav-link active">Register</a></li>
+
                        
                        
 

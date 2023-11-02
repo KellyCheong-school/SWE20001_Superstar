@@ -87,13 +87,15 @@
             //         <span aria-hidden='true'>&times;</span>
             //     </button>
             // </div></div>";
-
+    
         }
 
         // Close the database connection
         mysqli_close($conn);
     }
+    include 'includes/guestHeader.inc';
     ?>
+    <br><br><br><br>
 
     <section class="ftco-section">
         <div class="container">
@@ -107,11 +109,11 @@
                     <div class="login-wrap p-0">
                         <form action="#" class="signin-form" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                             <div class="form-group">
-                                <input type="text" name="username" id="username" class="form-control"
+                                <input style="font-size: 11pt;" type="text" name="username" id="username" class="form-control"
                                     placeholder="Username" required>
                             </div>
                             <div class="form-group">
-                                <input id="password-field" name="password" type="password" class="form-control"
+                                <input style="font-size: 11pt;" id="password-field" name="password" type="password" class="form-control"
                                     placeholder="Password" required>
                                 <span toggle="#password-field"
                                     class="fa fa-fw fa-eye field-icon toggle-password"></span>
