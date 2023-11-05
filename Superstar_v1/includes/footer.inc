@@ -2,11 +2,11 @@
         <section id="left">
           <h4>Contact us via phone or email:</h4>
           <p>Phone: 1-800-123-4567<br>
-             Email: support@aerostar.com
+             Email: support@superstar.com
           </p>
         </section>
         <section id="middle">
-          <h4> &copy; AeroStar - All Rights Reserved.</h4>
+          <h4> &copy; Superstar - All Rights Reserved.</h4>
         </section>
         <section id="right">
           <h4>Connect with us:</h4>

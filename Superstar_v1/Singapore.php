@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Singapore</title>
-    <link href="images/AeroStarLogo-Header.jpg" rel="icon">
+    <link href="images/logo.png" rel="icon">
     <link href = "styles/style2.css" rel = "stylesheet">
 
 </head>

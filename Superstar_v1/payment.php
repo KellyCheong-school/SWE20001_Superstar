@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-  <title>AeroStar - Payment</title>
-  <link href="images/AeroStarLogo-Header.jpg" rel="icon">
+  <title>Superstar - Payment</title>
+  <link href="images/logo.png" rel="icon">
   <script src="scripts/part2(2).js"></script>
   <link href="styles/style.css" rel="stylesheet">
 </head>

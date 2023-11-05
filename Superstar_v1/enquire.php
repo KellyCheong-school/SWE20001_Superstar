@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>AeroStar - Enquire</title>
-  <link href="images/AeroStarLogo-Header.jpg" rel="icon">
+  <title>Superstar - Enquire</title>
+  <link href="images/logo.png" rel="icon">
   <script src="scripts/part2.js"></script>
   <link href="styles/style.css" rel="stylesheet">
   <link href="styles/enhancements.css" rel="stylesheet">

@@ -4,11 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Book your AeroStar flight tickets online today and enjoy a hassle-free travel experience. Get great deals on flights to popular destinations across the globe with AeroStar airlines. Browse our flight options and book your tickets in a few easy steps.">
-  <meta name="keywords" content="AeroStar, flights, tickets">
+  <meta name="description" content="Book your Superstar flight tickets online today and enjoy a hassle-free travel experience. Get great deals on flights to popular destinations across the globe with Superstar airlines. Browse our flight options and book your tickets in a few easy steps.">
+  <meta name="keywords" content="Superstar, flights, tickets">
   <meta name="author" content="Jason Tan">
-  <title>AeroStar - Flights</title>
-  <link href="images/AeroStarLogo-Header.jpg" rel="icon">
+  <title>Superstar - Flights</title>
+  <link href="images/logo.png" rel="icon">
 
   <link href="styles/style.css" rel="stylesheet">
   <link href="styles/enhancements.css" rel="stylesheet">
@@ -152,7 +152,7 @@
             <p>Our customer support team is available 24/7 to assist you with any questions or issues you may have. Contact us via phone or email:</p>
             <ul>
               <li>Phone: 1-800-123-4567</li>
-              <li>Email: support@aerostar.com</li>
+              <li>Email: support@Superstar.com</li>
             </ul>
           </section>
         </div>

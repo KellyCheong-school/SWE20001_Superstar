@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <title>AeroStar - Edit Flight</title>
-    <link href="images/AeroStarLogo-Header.jpg" rel="icon">
+    <title>Superstar - Edit Flight</title>
+    <link href="images/logo.png" rel="icon">
     <link href="styles/style.css" rel="stylesheet">
 </head>
 
