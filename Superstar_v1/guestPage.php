@@ -20,6 +20,20 @@
         body {
             font-family: 'Open Sans', sans-serif;
         }
+
+        .carousel-caption h3 {
+            color: #fff;
+            font-weight: 5px;
+        }
+
+        .card-img-top {
+            width: 100%;
+            /* Make sure the image takes up the full width of the card */
+            height: 100%;
+            /* Make sure the image takes up the full height of the card */
+            object-fit: cover;
+            /* This property will make the image fill the entire space while maintaining its aspect ratio */
+        }
     </style>
 </head>
 
@@ -41,53 +55,92 @@
     $row2 = mysqli_fetch_array($query1);
     include 'includes/guestHeader.inc';
     ?>
-    <br><br><br><br>
-    <hr>
-    <h2>Destinations</h2>
-    <p>Our flight destinations vary across Asia, including Tokyo in Japan, Bali in Indonesia, Seoul
-        in South Korea, Bangkok in Thailand, and Singapore. For European destinations, we offer flights to Paris in
-        France,
-        Rome in Italy, Barcelona in Spain, Amsterdam in the Netherlands, and Berlin in Germany.</p>
-    <p class="hidden">Scroll left for more destinations!</p>
-    <table class="flights">
-        <tr class="flights">
-            <td class="flights"> <img src="img/<?php echo $row1['destinationimg']; ?>" width="400"><br><br>
-                <?php echo $row1['destinationname']; ?>
-                <?php echo $row1['destinationdesc']; ?><br><br>Economy class from <br>RM
-                <?php echo $row1['destinationprice']; ?>
-                <br><a class="view-more" href="<?php echo $row1['destinationname']; ?>.php">View More</a>
-            </td><br>
-            <td class="flights"> <img src="img/<?php echo $row2['destinationimg']; ?>" width="400"><br><br>
-                <?php echo $row2['destinationname']; ?>
-                <?php echo $row2['destinationdesc']; ?><br><br>Economy from <br>RM
-                <?php echo $row2['destinationprice']; ?>
-                <br><a class="view-more" href="<?php echo $row2['destinationname']; ?>.php">View More</a>
-            </td>
-        </tr>
-    </table>
-    <?php // Close the database connection
-    mysqli_close($conn);
-    ?>
+    <br><br><br>
 
-    <hr>
 
-    <div class="benefits-container">
-        <p>Enjoy exclusive benefits as a member:</p>
-        <ul>
-            <li>Priority access to promotions</li>
-            <li>Book flight tickets</li>
-            <li>View destinations provided and the descriptions of tourist spots</li>
-        </ul>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-5">
+                <h2 class="heading-section">Destinations</h2>
+            </div>
+        </div>
+        <p style="color:#fff;">Our flight destinations vary across Asia, including Tokyo in Japan, Bali in Indonesia,
+            Seoul
+            in South Korea, Bangkok in Thailand, and Singapore. For European destinations, we offer flights to Paris in
+            France,
+            Rome in Italy, Barcelona in Spain, Amsterdam in the Netherlands, and Berlin in Germany.</p>
+        <!-- Add a row element for the order table -->
+        <div class="row">
+            <!-- Add a column element for the order table -->
+            <div class="col-md-12">
+            </div>
+        </div>
+        <div class="card-group m-5">
+            <div class="card">
+                <img class="card-img-top w-100" src="img/<?php echo $row1['destinationimg']; ?>"
+                    alt="<?php echo $row1['destinationname']; ?>">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <?php echo $row1['destinationname']; ?>
+                    </h5>
+                    <p class="card-text">
+                        <?php echo $row1['destinationdesc']; ?>
+                    </p>
+                    <p class="card-text"><small class="text-muted">Economy class from RM
+                            <?php echo $row1['destinationprice']; ?>
+                        </small></p>
+                    <a class="view-more" href="<?php echo $row1['destinationname']; ?>.php">View More</a>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top" src="img/<?php echo $row2['destinationimg']; ?>"
+                    alt="<?php echo $row2['destinationname']; ?>">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <?php echo $row1['destinationname']; ?>
+                    </h5>
+                    <p class="card-text">
+                        <?php echo $row1['destinationdesc']; ?>
+                    </p>
+                    <p class="card-text"><small class="text-muted">Economy class from RM
+                            <?php echo $row2['destinationprice']; ?>
+                        </small></p>
+                    <a class="view-more" href="<?php echo $row1['destinationname']; ?>.php">View More</a>
+                </div>
+            </div>
+        </div>
 
-        <p><a href="member_registration.php">Be a member now!</a></p>
-    </div>
 
-    <a href="#top" class="back-to-top">Back to Top</a><br><br><br>
-    <hr>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/popper.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
+        <div class="d-flex justify-content-center align-items-center">
+            <button href="product.php" class="form-control btn btn-primary submit px-3 w-25">View Flight
+                Tickets</button>
+        </div>
+        <br><br>
+        <hr>
+
+
+        <div class="container mt-4" style="color: #fff;">
+            <p>Enjoy exclusive benefits as a member:</p>
+            <ul>
+                <li>Priority access to promotions</li>
+                <li>Book flight tickets</li>
+                <li>View destinations provided and the descriptions of tourist spots</li>
+            </ul>
+
+            <p><a href="member_registration.php">Be a member now!</a></p>
+        </div>
+        <br><br><br><br>
+
+
+
+        <?php // Close the database connection
+        mysqli_close($conn);
+        ?>
+
+        <script src="js/jquery.min.js"></script>
+        <script src="js/popper.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/main.js"></script>
 </body>
 
 </html>

@@ -21,12 +21,81 @@
             font-family: 'Open Sans', sans-serif;
         }
     </style>
+
+    <script>
+        // Function to sort the table by Booking ID in ascending order
+        document.addEventListener("DOMContentLoaded", function () {
+            sortTable(0);
+        });
+
+        window.onload = function () {
+            if (chartData.length > 0) {
+                var chart = new CanvasJS.Chart("pieChartContainer", {
+                    theme: "light2",
+                    animationEnabled: true,
+                    title: {
+                        text: "Most Popular Flights Ordered"
+                    },
+                    data: [{
+                        type: "pie",
+                        indexLabel: "(#percent%)", // Modified this line
+                        yValueFormatString: "(#)",
+                        indexLabelPlacement: "inside",
+                        indexLabelFontColor: "#36454F",
+                        indexLabelFontSize: 18,
+                        indexLabelFontWeight: "bolder",
+                        showInLegend: true,
+                        legendText: "{label}",
+                        dataPoints: chartData
+                    }]
+                });
+                chart.render();
+            } else {
+                console.log("No data points to render the chart.");
+            }
+
+            // Check if averageOrdersJSON is set before rendering the column chart
+            if (typeof averageOrdersData !== 'undefined') {
+                console.log(averageOrdersData);
+                var columnChart = new CanvasJS.Chart("columnChartContainer", {
+                    animationEnabled: true,
+                    theme: "light2",
+                    title: {
+                        text: "Average Number of Orders per Day"
+                    },
+                    axisX: {
+                        title: "Day",
+                        interval: 1,
+                        reversed: true,
+                        valueFormatString: "DDD",
+                    },
+                    axisY: {
+                        title: "Order Count",
+                        interval: 1,
+                        minimum: 0 // Set the minimum value for the y-axis
+                    },
+                    data: [{
+                        type: "column",
+                        yValueFormatString: "#,##0",
+                        dataPoints: averageOrdersData
+                    }]
+                });
+
+                columnChart.render();
+            } else {
+                console.log("No data points to render the column chart.");
+            }
+
+        }
+    </script>
 </head>
 
 <body>
     <?php
     require_once('settings.php');
     session_start();
+    error_reporting(E_ALL);
+    ini_set('display_errors', true);
 
     // Establish a database connection
     $conn = @mysqli_connect($host, $user, $pwd, $sql_db);
@@ -35,12 +104,14 @@
     if (!$conn) {
         die("Database connection failed: " . mysqli_connect_error());
     }
+
     // Check if the manager is not logged in
     if (!isset($_SESSION['manager_id']) || !isset($_SESSION['manager_username'])) {
         // Redirect to the manager login page
         header("Location: manager_login.php");
         exit();
     }
+
     // Check if the user is logged in
     if (isset($_SESSION['manager_id'])) {
         // The user is logged in, retrieve the username from the session
@@ -48,293 +119,272 @@
         $username = $_SESSION['manager_username'];
     } else {
         // Redirect the user to the login page if not logged in
-        header("Location: index.php");
+        header("Location: manager_login.php");
         exit();
     }
-    $queryUser = mysqli_query($conn, "SELECT username FROM managers WHERE id = $userId");
-    $userData = mysqli_fetch_assoc($queryUser);
-    $username = $userData['username'];
-    include 'includes/Managerheader.inc'; ?>
+
+    include 'includes/Managerheader.inc';
+    ?>
+    <?php
+    // Query to retrieve the most popular flights
+    $popularFlightsQuery = "SELECT selected_flight_id, COUNT(*) as count FROM booking GROUP BY selected_flight_id ORDER BY count DESC LIMIT 5";
+    $popularFlightsResult = mysqli_query($conn, $popularFlightsQuery);
+
+    if ($popularFlightsResult === false) {
+        // Check for errors in the query
+        die("Error in query: " . mysqli_error($conn));
+    }
+
+    $popularFlightsData = mysqli_fetch_all($popularFlightsResult, MYSQLI_ASSOC);
+
+    // Initialize an empty array for data points
+    $dataPoints = [];
+
+    // Calculate the total count of all flights
+    $totalCount = array_sum(array_column($popularFlightsData, 'count'));
+
+    // Populate the dataPoints array with flight data and calculate percentage
+    foreach ($popularFlightsData as $flightData) {
+        $flightId = $flightData['selected_flight_id'];
+
+        // Fetch flight details based on flight ID (modify the query as per your database schema)
+        $flightDetailsQuery = "SELECT arrival_city FROM flights WHERE id = $flightId";
+        $flightDetailsResult = mysqli_query($conn, $flightDetailsQuery);
+
+        if ($flightDetailsResult === false) {
+            // Check for errors in the query
+            die("Error in query: " . mysqli_error($conn));
+        }
+
+        $flightDetails = mysqli_fetch_assoc($flightDetailsResult);
+
+        // Calculate the percentage
+        $percentage = ($flightData['count'] / $totalCount) * 100;
+
+        // Add data point to the array
+        $dataPoints[] = ["label" => $flightDetails['arrival_city'], "y" => $flightData['count'], "percentage" => $percentage];
+    }
+
+    // Convert the data points to JSON format
+    $dataPointsJSON = json_encode($dataPoints, JSON_NUMERIC_CHECK);
+
+    // Output the JSON data to be used in JavaScript
+    echo "<script>var chartData = $dataPointsJSON;</script>";
+    ?>
+
+    <?php
+    // Modify the query to retrieve data for the average number of orders per day
+    $averageOrdersQuery = "SELECT days_of_week.day, IFNULL(COUNT(booking.id), 0) AS orderCount
+    FROM (
+        SELECT 'Mon' AS day
+        UNION SELECT 'Tue'
+        UNION SELECT 'Wed'
+        UNION SELECT 'Thu'
+        UNION SELECT 'Fri'
+        UNION SELECT 'Sat'
+        UNION SELECT 'Sun'
+    ) AS days_of_week
+    LEFT JOIN booking ON days_of_week.day = DATE_FORMAT(booking.booking_date, '%a')
+    GROUP BY days_of_week.day
+    ORDER BY FIELD(days_of_week.day, 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
+    ";
+
+    // Execute the query
+    $averageOrdersResult = mysqli_query($conn, $averageOrdersQuery);
+
+    if ($averageOrdersResult === false) {
+        // Handle the error if the query fails
+        echo "Error executing average orders query: " . mysqli_error($conn);
+    } else {
+        // Fetch the data as an associative array
+        $averageOrdersData = mysqli_fetch_all($averageOrdersResult, MYSQLI_ASSOC);
+
+        if (!empty($averageOrdersData)) {
+            // Remove the 'x' field from each data point
+            $averageOrdersData = array_map(function ($dataPoint) {
+                unset($dataPoint['x']);
+                return $dataPoint;
+            }, $averageOrdersData);
+
+            // Restructure the data points array
+            $dataPoints = array_map(function ($dataPoint) {
+                return ["label" => $dataPoint['day'], "y" => $dataPoint['orderCount']];
+            }, $averageOrdersData);
+
+            // Convert the PHP array to JSON for JavaScript
+            $averageOrdersJSON = json_encode($dataPoints, JSON_NUMERIC_CHECK);
+
+            // Output the JSON data to be used in JavaScript for column chart
+            echo "<script>var averageOrdersData = $averageOrdersJSON;</script>";
+        } else {
+            $averageOrdersJSON = '[]';
+            echo "No data available for average orders.";
+        }
+    }
+    ?>
+
+
     <br><br><br><br>
+
     <div class="container mt-4">
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
                 <h2 class="heading-section">Manager Page</h2>
             </div>
         </div>
-        <?php if ($_SERVER["REQUEST_METHOD"] !== "POST" || !isset($_POST['query'])) { ?>
-            <p>Please select a query option and submit the form to view the orders.</p>
-        <?php } ?>
+        <div class="row justify-content-center">
+            <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+            <div id="pieChartContainer" style="height: 370px; width: 40%; display: inline-block;"></div>
+            <span>&nbsp</span>
+            <div id="columnChartContainer" style="height: 370px; width: 40%; display: inline-block;"></div>
+        </div>
+        <br>
+        <hr>
+        <h2 class="heading-section">Query Order</h2>
+        <br>
+
+
+
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-6">
                 <div class="login-wrap p-0">
-                    <form action="manager.php" method="POST" class="mb-4">
+                    <form id="searchForm" method="post" action="">
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="query">Select Query:</label>
+                                        <label for="searchType">Search By:</label>
                                     </div>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="form-group">
-                                        <select name="query" id="query" style="font-size: 11pt;"
-                                            class="form-control form-control-lg">
-                                            <option value="all" style="color:black;" <?php if (isset($_POST['query']) && $_POST['query'] === 'all')
-                                                echo 'selected'; ?>>All
-                                                Orders</option>
-                                            <option value="customer" style="color:black;" <?php if (isset($_POST['query']) && $_POST['query'] === 'customer')
-                                                echo 'selected'; ?>>Orders by Customer
+                                        <select id="searchType" name="searchType" onchange="updateSearchInputField()"
+                                            style="font-size: 11pt;" class="form-control form-control-lg">
+                                            <option value="all" style="color:black;" <?php echo isset($_POST['searchType']) && $_POST['searchType'] === 'all' ? 'selected' : ''; ?>>All Bookings</option>
+                                            <option value="selected_arrival_city"  style="color:black;" <?php echo isset($_POST['searchType']) && $_POST['searchType'] === 'selected_arrival_city' ? 'selected' : ''; ?>>
+                                                Arrival City</option>
+                                            <option value="cabin" style="color:black;" <?php echo isset($_POST['searchType']) && $_POST['searchType'] === 'cabin' ? 'selected' : ''; ?>>Cabin</option>
+                                            <option value="features" style="color:black;" <?php echo isset($_POST['searchType']) && $_POST['searchType'] === 'features' ? 'selected' : ''; ?>>Features
                                             </option>
-                                            <option value="product" style="color:black;" <?php if (isset($_POST['query']) && $_POST['query'] === 'product')
-                                                echo 'selected'; ?>>Orders by Product
+                                            <option value="pending" style="color:black;" <?php echo isset($_POST['searchType']) && $_POST['searchType'] === 'pending' ? 'selected' : ''; ?>>Pending Bookings
                                             </option>
-                                            <option value="pending" style="color:black;" <?php if (isset($_POST['query']) && $_POST['query'] === 'pending')
-                                                echo 'selected'; ?>>Pending Orders</option>
-                                            <option value="cost" style="color:black;" <?php if (isset($_POST['query']) && $_POST['query'] === 'cost')
-                                                echo 'selected'; ?>>
-                                                Orders by Total Cost</option>
+                                            <option value="fulfilled_between_dates" style="color:black;" <?php echo isset($_POST['searchType']) && $_POST['searchType'] === 'fulfilled_between_dates' ? 'selected' : ''; ?>>
+                                                Completed Booking Between
+                                                Dates
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <?php if (isset($_POST['query']) && ($_POST['query'] === 'customer' || $_POST['query'] === 'product')) { ?>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="value" style="font-size: 11pt;"
-                                    placeholder="Enter customer name or product"
-                                    value="<?php echo isset($_POST['value']) ? $_POST['value'] : ''; ?>">
-                            </div>
 
-                        <?php } ?>
-                        <button type="submit" class="form-control btn btn-primary submit">Submit</button>
+                        <!-- Container for the dynamic search input field -->
+                        <div id="searchInputContainer">
+                            <?php
+                            // Display search input only for specific options
+                            $searchTypesWithInput = ['selected_arrival_city', 'cabin', 'features'];
+                            if (isset($_POST['searchType']) && in_array($_POST['searchType'], $searchTypesWithInput)) {
+                                echo '<input type="text" class="form-control" style="font-size: 11pt;" id="searchInput" name="searchInput" placeholder="Enter search term" value="' . htmlspecialchars(isset($_POST['searchInput']) ? $_POST['searchInput'] : '') . '"><br>';
+                            } elseif (isset($_POST['searchType']) && $_POST['searchType'] === 'selected_arrival_city') {
+                                // Display a dropdown for Arrival City
+                                $arrivalCityOptions = ['City1', 'City2', 'City3']; // Replace with your actual options
+                                echo '<select id="searchInput" name="searchInput" style="font-size: 11pt;" class="form-control form-control-lg">';
+                                foreach ($arrivalCityOptions as $option) {
+                                    echo '<option value="' . $option . '" ' . (isset($_POST['searchInput']) && $_POST['searchInput'] === $option ? 'selected' : '') . '>' . $option . '</option>';
+                                }
+                                echo '</select>';
+                            } elseif (isset($_POST['searchType']) && $_POST['searchType'] === 'cabin') {
+                                // Display a dropdown for Cabin
+                                $cabinOptions = ['Cabin1', 'Cabin2', 'Cabin3']; // Replace with your actual options
+                                echo '<select id="searchInput" name="searchInput" style="font-size: 11pt;" class="form-control form-control-lg">';
+                                foreach ($cabinOptions as $option) {
+                                    echo '<option value="' . $option . '" ' . (isset($_POST['searchInput']) && $_POST['searchInput'] === $option ? 'selected' : '') . '>' . $option . '</option>';
+                                }
+                                echo '</select>';
+                            } elseif (isset($_POST['searchType']) && $_POST['searchType'] === 'features') {
+                                // Display a dropdown for Features
+                                $featuresOptions = ['Feature1', 'Feature2', 'Feature3']; // Replace with your actual options
+                                echo '<select id="searchInput" name="searchInput" style="font-size: 11pt;" class="form-control form-control-lg">';
+                                foreach ($featuresOptions as $option) {
+                                    echo '<option value="' . $option . '" ' . (isset($_POST['searchInput']) && $_POST['searchInput'] === $option ? 'selected' : '') . '>' . $option . '</option>';
+                                }
+                                echo '</select>';
+                            } elseif (isset($_POST['searchType']) && $_POST['searchType'] === 'fulfilled_between_dates') {
+                                // Display date input fields for fulfilled_between_dates
+                                echo '<label for="startDate">Start Date:</label>';
+                                echo '<input type="date" id="startDate" name="startDate" value="' . htmlspecialchars(isset($_POST['startDate']) ? $_POST['startDate'] : '') . '">';
+
+                                echo '<label for="endDate">End Date:</label>';
+                                echo '<input type="date" id="endDate" name="endDate" value="' . htmlspecialchars(isset($_POST['endDate']) ? $_POST['endDate'] : '') . '">';
+                            }
+                            ?>
+                        </div>
+                        <button type="submit" name="searchButton"
+                            class="form-control btn btn-primary submit">Search</button>
                     </form>
                 </div>
             </div>
         </div>
+        <br><br>
 
-        <!-- Add a row element for the order table -->
-        <div class="row">
-            <!-- Add a column element for the order table -->
-            <div class="col-md-12">
+        <!-- Display Bookings Table -->
+        <table id="bookingsTable" class='table table-striped table-bordered' style='color:#fff;'>
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Booking ID</th>
+                    <th onclick="sortTable(1)">Cabin</th>
+                    <th onclick="sortTable(2)">Features</th>
+                    <th onclick="sortTable(3)">Num Tickets</th>
+                    <th onclick="sortTable(4)">Booking Date</th>
+                    <th onclick="sortTable(5)">Departure Date & Time</th>
+                    <th onclick="sortTable(6)">Arrival Date & Time</th>
+                    <th onclick="sortTable(7)">Departure City</th>
+                    <th onclick="sortTable(8)">Arrival City (Flight)</th>
+                    <th onclick="sortTable(9)">Booked by</th>
+                    <th onclick="sortTable(10)">Booking Status</th>
+                    <!-- Add other columns as needed -->
+                </tr>
+            </thead>
+
+            <tbody id="bookingsTableBody">
+                <!-- Display bookings here using PHP -->
                 <?php
+                if (isset($_POST['searchButton'])) {
+                    $query = "
+            SELECT booking.*, flights.departure_datetime, flights.arrival_datetime,
+                flights.departure_city AS flight_departure_city, flights.arrival_city AS flight_arrival_city,
+                members.username AS booked_by
+            FROM booking
+            LEFT JOIN flights ON booking.selected_flight_id = flights.id
+            LEFT JOIN members ON booking.member_id = members.id";
+                    $value = isset($_POST['searchInput']) ? $_POST['searchInput'] : '';
 
-                // Function to display order information in an HTML table
-                function displayOrderInformation($orders)
-                {
-                    echo "<table class='table table-striped table-bordered' style='color:#fff;'>";
-                    echo "<tr>
-                            <th>Order Number</th>
-                            <th>Order Date</th>
-                            <th>Product Details</th>
-                            <th>Product Cost</th>
-                            <th>Customer Name</th>
-                            <th>Order Status</th>
-                            <th>Action</th>
-                            </tr>";
-
-                    while ($row = mysqli_fetch_assoc($orders)) {
-                        echo "<tr>";
-                        echo "<td>" . $row['order_id'] . "</td>";
-                        echo "<td>" . $row['order_time'] . "</td>";
-                        echo "<td>" . $row['flight'] . " (" . $row['cabin'] . ")
-                <br>Departure Date: " . $row['departureDate'] . "
-                <br>Return Date: " . $row['returnDate'] . "
-                <br>Optional Features: " . $row['features'] . "
-                <br>Ticket Quantity: " . $row['numTickets'] . "</td>";
-                        echo "<td>RM" . $row['order_cost'] . "</td>";
-                        echo "<td>" . $row['firstname'] . " " . $row['lastname'] . "</td>";
-                        echo "<td>" . $row['order_status'] . "</td>";
-                        echo "<td>";
-                        if ($row['order_status'] === 'Pending') {
-                            echo "<form action='manager.php' method='POST'>";
-                            echo "<input type='hidden' name='order_id' value='" . $row['order_id'] . "'>";
-                            echo "<input type='hidden' name='action' value='cancel'>";
-                            echo "<input type='submit' value='Cancel'>";
-                            echo "</form>";
-                        }
-                        echo "<form action='manager.php' method='POST'>";
-                        echo "<input type='hidden' name='order_id' value='" . $row['order_id'] . "'>";
-                        echo "<select name='status'>";
-                        echo "<option value='Pending' " . ($row['order_status'] === 'Pending' ? 'selected' : '') . ">Pending</option>";
-                        echo "<option value='Fulfilled' " . ($row['order_status'] === 'Fulfilled' ? 'selected' : '') . ">Fulfilled</option>";
-                        echo "<option value='Paid' " . ($row['order_status'] === 'Paid' ? 'selected' : '') . ">Paid</option>";
-                        echo "<option value='Archived' " . ($row['order_status'] === 'Archived' ? 'selected' : '') . ">Archived</option>";
-                        echo "</select>";
-                        echo "<input type='hidden' name='action' value='update'>";
-                        echo "<input type='submit' value='Update'>";
-                        echo "</form>";
-                        echo "</td>";
-                        echo "</tr>";
-                    }
-
-                    echo "</table>";
-                }
-
-                // Display the manager reports
-                function displayManagerReports($conn)
-                {
-                    // Most popular product ordered
-                    $popularProductQuery = "SELECT flight, cabin, COUNT(*) AS order_count FROM orders GROUP BY flight, cabin ORDER BY order_count DESC LIMIT 1";
-                    $popularProductResult = mysqli_query($conn, $popularProductQuery);
-                    $popularProduct = mysqli_fetch_assoc($popularProductResult);
-
-                    echo "<hr><h2 id='report' style='color:#fff'><strong>Manager Reports</strong></h2>";
-                    echo "<h3 style='color:#fff'>Most Popular Product Ordered</h3>";
-                    if ($popularProduct) {
-                        echo "<p>The most popular product ordered is <strong>" . $popularProduct['flight'] . " (" . $popularProduct['cabin'] . ")</strong> with " . $popularProduct['order_count'] . " orders.</p><br>";
-                    } else {
-                        echo "<p>No orders found.</p>";
-                    }
-
-                    // Fulfilled orders purchased between two dates
-                    echo "<hr><h3 style='color:#fff'>Fulfilled Orders Purchased Between Two Dates</h3><br>";
-                    echo
-                        '<div class="row justify-content-center">' .
-                        '<div class="col-md-6 col-lg-6">' . '
-                            <div class="login-wrap p-0">' . '
-                                <form action="manager.php" class="signin-form" method="POST">' . '
-                                    <div class="row">' . '
-                                        <div class="col-md-6">' . '
-                                            <div class="form-group">' . '
-                                            <label for="from_date">From:</label>' . '
-                                                <input style="font-size: 11pt;" type="date" name="from_date" id="from_date" class="form-control" placeholder="From:" required>' . '
-                                            </div>' . '
-                                        </div>' . '
-                                        <div class="col-md-6">' . '
-                                            <div class="form-group">' . '
-                                            <label for="from_date">To:</label>' . '
-                                                <input style="font-size: 11pt;" type="date" name="to_date" id="to_date" class="form-control" placeholder="To:" required>' . '
-                                            </div>' . '
-                                        </div>' . '
-                                    </div>' . '
-                                    <div class="form-group">' . '
-                                                </div>' . '
-                                <button type="submit" class="form-control btn btn-primary submit px-3">Generate Report</button>' . '
-                                </form><br>' . '
-                            </div>' . '
-                        </div>' . '
-                    </div>';
-
-                    if (isset($_POST['from_date']) && isset($_POST['to_date'])) {
-                        $fromDate = $_POST['from_date'];
-                        $toDate = $_POST['to_date'];
-
-                        $fulfilledOrdersQuery = "SELECT * FROM orders WHERE order_status = 'Fulfilled' AND DATE(order_time) BETWEEN '$fromDate' AND '$toDate'";
-
-                        $fulfilledOrdersResult = mysqli_query($conn, $fulfilledOrdersQuery);
-
-                        if ($fulfilledOrdersResult && mysqli_num_rows($fulfilledOrdersResult) > 0) {
-                            echo "<p>Fulfilled orders between $fromDate and $toDate:</p>";
-                            echo "<table class='table table-striped table-bordered'>";
-                            echo "<tr>";
-                            echo "<th>Order ID</th>";
-                            echo "<th>Order Time</th>";
-                            echo "<th>Product</th>";
-                            echo "<th>Order Cost</th>";
-                            echo "<th>Customer</th>";
-                            echo "<th>Status</th>";
-                            echo "</tr>";
-
-                            while ($row = mysqli_fetch_assoc($fulfilledOrdersResult)) {
-                                echo "<tr>";
-                                echo "<td>" . $row['order_id'] . "</td>";
-                                echo "<td>" . $row['order_time'] . "</td>";
-                                echo "<td>" . $row['flight'] . " (" . $row['cabin'] . ")
-                        <br>Departure Date: " . $row['departureDate'] . "
-                        <br>Return Date: " . $row['returnDate'] . "
-                        <br>Optional Features: " . $row['features'] . "
-                        <br>Ticket Quantity: " . $row['numTickets'] . "</td>";
-                                echo "<td>RM" . $row['order_cost'] . "</td>";
-                                echo "<td>" . $row['firstname'] . " " . $row['lastname'] . "</td>";
-                                echo "<td>" . $row['order_status'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-                        } else {
-                            echo "<p>No fulfilled orders found between $fromDate and $toDate.</p>";
-                        }
-                    }
-
-                    // Average number of orders per day
-                    $averageOrdersQuery = "SELECT COUNT(*) as total_orders, DATE(order_time) as order_date FROM orders GROUP BY DATE(order_time)";
-                    $averageOrdersResult = mysqli_query($conn, $averageOrdersQuery);
-                    $totalDays = mysqli_num_rows($averageOrdersResult);
-
-                    if ($totalDays > 0) {
-                        $totalOrders = 0;
-
-                        while ($row = mysqli_fetch_assoc($averageOrdersResult)) {
-                            $totalOrders += $row['total_orders'];
-                        }
-
-                        $averageOrdersPerDay = $totalOrders / $totalDays;
-
-                        echo "<hr><h3 style='color:#fff'>Average Number of Orders Per Day</h3>";
-                        echo "<p>The average number of orders per day is <strong>" . number_format($averageOrdersPerDay, 2) . "</strong>.</p><br>";
-                    } else {
-                        echo "<h3 style='color:#fff'>Average Number of Orders Per Day</h3>";
-                        echo "<p>No orders found.</p><br>";
-                    }
-                }
-
-                // Handle form submissions or user actions
-                if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                    // Check if the form is submitted to update the order status
-                    if (isset($_POST['order_id']) && isset($_POST['status']) && isset($_POST['action'])) {
-                        $order_id = $_POST['order_id'];
-                        $status = $_POST['status'];
-                        $action = $_POST['action'];
-
-                        // Update the order status in the database
-                        $updateQuery = "UPDATE orders SET order_status = '$status' WHERE order_id = '$order_id'";
-                        $updateResult = mysqli_query($conn, $updateQuery);
-
-                        if ($updateResult) {
-                            echo "Order status updated successfully.";
-                        } else {
-                            echo "Error updating order status: " . mysqli_error($conn);
-                        }
-                    }
-
-                    // Check if the form is submitted to cancel the order
-                    if (isset($_POST['order_id']) && isset($_POST['action']) && $_POST['action'] === 'cancel') {
-                        $order_id = $_POST['order_id'];
-
-                        // Delete the order from the database
-                        $deleteQuery = "DELETE FROM orders WHERE order_id = '$order_id'";
-                        $deleteResult = mysqli_query($conn, $deleteQuery);
-
-                        if ($deleteResult) {
-                            echo "Order canceled successfully.";
-                        } else {
-                            echo "Error canceling order: " . mysqli_error($conn);
-                        }
-                    }
-                }
-
-                // Retrieve order information from the database based on the selected query
-                if (isset($_POST['query'])) {
-                    $query = "SELECT * FROM orders";
-                    $value = isset($_POST['value']) ? $_POST['value'] : '';
-
-                    switch ($_POST['query']) {
+                    switch ($_POST['searchType']) {
                         case 'all':
-                            $query = "SELECT * FROM orders ORDER BY order_id ASC";
+                            // Keep the default query
                             break;
-                        case 'customer':
-                            $query = "SELECT * FROM orders WHERE firstname LIKE '%$value%' OR lastname LIKE '%$value%'";
+                        case 'selected_arrival_city':
+                            // Adjust the query to filter by arrival city
+                            $query .= " WHERE flights.arrival_city LIKE '%$value%'";
                             break;
-                        case 'product':
-                            $query = "SELECT * FROM orders WHERE flight LIKE '%$value%' OR cabin LIKE '%$value%'";
+                        case 'cabin':
+                            // Adjust the query to filter by cabin
+                            $query .= " WHERE cabin LIKE '%$value%'";
+                            break;
+                        case 'features':
+                            // Adjust the query to filter by features
+                            $query .= " WHERE features LIKE '%$value%'";
                             break;
                         case 'pending':
-                            $query = "SELECT * FROM orders WHERE order_status = 'Pending'";
+                            // Adjust the query to filter by pending status
+                            $query .= " WHERE booking_status = 'Pending'";
                             break;
-                        case 'cost':
-                            $query = "SELECT * FROM orders ORDER BY order_cost";
+                        case 'fulfilled_between_dates':
+                            // Adjust the query to filter by fulfilled orders between two dates
+                            $startDate = mysqli_real_escape_string($conn, $_POST['startDate']);
+                            $endDate = mysqli_real_escape_string($conn, $_POST['endDate']);
+                            $query .= " WHERE booking.booking_status = 'Complete' AND booking.booking_date BETWEEN '$startDate' AND '$endDate'";
                             break;
                         default:
                             break;
@@ -343,22 +393,212 @@
                     $result = mysqli_query($conn, $query);
 
                     if ($result) {
-                        // Display the order information in an HTML table
-                        displayOrderInformation($result);
+                        if (mysqli_num_rows($result) > 0) {
+                            // Display the booking information in an HTML table
+                            displayBookingInformation($result, $conn);
+                        } else {
+                            echo '<script>alert("No matching bookings found.");</script>';
+                            // Reset the search form and reload the page after a short delay
+                            echo '<script>
+                                window.location.reload();
+                                window.location.href = "manager.php";
+                        </script>';
+                        }
                     } else {
-                        echo "Error retrieving order information: " . mysqli_error($conn);
+                        echo "Error retrieving booking information: " . mysqli_error($conn);
+                    }
+                } else {
+                    // Fetch all bookings without applying any filter
+                    $bookingQuery = "
+            SELECT booking.*, flights.departure_datetime, flights.arrival_datetime,
+                flights.departure_city AS flight_departure_city, flights.arrival_city AS flight_arrival_city,
+                members.username AS booked_by
+            FROM booking
+            LEFT JOIN flights ON booking.selected_flight_id = flights.id
+            LEFT JOIN members ON booking.member_id = members.id
+        ";
+                    $bookingResult = mysqli_query($conn, $bookingQuery);
+
+                    if ($bookingResult) {
+                        $bookings = mysqli_fetch_all($bookingResult, MYSQLI_ASSOC);
+                        // Display the booking information in an HTML table
+                        displayBookingInformation($bookings, $conn);
+                    } else {
+                        echo "Error retrieving booking information: " . mysqli_error($conn);
                     }
                 }
 
-                // Display the manager reports
-                displayManagerReports($conn);
+                function displayBookingInformation($bookings, $conn)
+                {
+                    foreach ($bookings as $booking) {
+                        echo '<tr>';
+                        echo '<td>' . $booking['id'] . '</td>';
+                        echo '<td>' . $booking['cabin'] . '</td>';
+                        echo '<td>' . $booking['features'] . '</td>';
+                        echo '<td>' . $booking['num_tickets'] . '</td>';
+                        echo '<td>' . $booking['booking_date'] . '</td>';
+                        echo '<td>' . $booking['departure_datetime'] . '</td>';
+                        echo '<td>' . $booking['arrival_datetime'] . '</td>';
+                        echo '<td>' . $booking['flight_departure_city'] . '</td>';
+                        echo '<td>' . $booking['flight_arrival_city'] . '</td>';
+                        echo '<td>' . $booking['booked_by'] . '</td>';
+                        echo '<td>';
+                        // Check if the form is submitted for status update
+                        if (isset($_POST['updateStatus'])) {
+                            $bookingId = $_POST['bookingId'];
+                            $newStatus = $_POST['newStatus'];
 
-                // Close the database connection
-                mysqli_close($conn);
+                            // Check if the new status is "Cancel Booking"
+                            if ($newStatus === 'Cancel Booking') {
+                                // Perform the deletion from the database
+                                $deleteQuery = "DELETE FROM booking WHERE id = $bookingId";
+                                $deleteResult = mysqli_query($conn, $deleteQuery);
+
+                                // Check if the deletion was successful
+                                if ($deleteResult) {
+                                    echo '<script>alert("Booking canceled successfully!");</script>';
+                                    // Redirect to the same page
+                                    header("Location: manager.php");
+                                    exit();
+                                } else {
+                                    echo '<script>alert("Error canceling booking: ' . mysqli_error($conn) . '");</script>';
+                                }
+                            } else {
+                                // Update the booking status in the database
+                                $updateQuery = "UPDATE booking SET booking_status = '$newStatus' WHERE id = $bookingId";
+                                $updateResult = mysqli_query($conn, $updateQuery);
+
+                                // Check if the update was successful
+                                if ($updateResult) {
+                                    echo '<script>alert("Booking status updated successfully!");</script>';
+                                    // Redirect to the same page
+                                    header("Location: manager.php");
+                                    exit();
+                                } else {
+                                    echo '<script>alert("Error updating booking status: ' . mysqli_error($conn) . '");</script>';
+                                    header("Location: manager.php");
+                                    exit();
+                                }
+                            }
+                        }
+
+                        // Display the form
+                        echo '<form method="post" action="">';
+                        echo '<input type="hidden" name="bookingId" value="' . $booking['id'] . '">';
+                        echo 'Current Status: ' . $booking['booking_status'] . '<br>';
+                        echo '<select name="newStatus">
+                    <option value="Complete">Complete</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Cancel Booking">Cancel Booking</option>
+                    </select>';
+                        echo '<input type="submit" name="updateStatus" value="Update">';
+                        echo '</form>';
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                }
                 ?>
-            </div>
-        </div>
+            </tbody>
+        </table>
     </div>
+    <script>
+        // Function to update the search input field based on the selected search type
+        function updateSearchInputField() {
+            var searchType = document.getElementById("searchType").value;
+            var searchInputContainer = document.getElementById("searchInputContainer");
+
+            // Clear the container
+            searchInputContainer.innerHTML = '';
+
+            if (searchType === "selected_arrival_city" || searchType === "cabin" || searchType === "features") {
+                // Display a text input for Arrival City, Cabin, or Features
+                var textInput = document.createElement("input");
+                textInput.type = "text";
+                textInput.id = "searchInput";
+                textInput.name = "searchInput";
+                textInput.placeholder = "Enter search term";
+
+                searchInputContainer.appendChild(textInput);
+            } else if (searchType === "fulfilled_between_dates") {
+                // Display date input fields for fulfilled_between_dates
+                var startDateInput = document.createElement("input");
+                startDateInput.type = "date";
+                startDateInput.id = "startDate";
+                startDateInput.name = "startDate";
+                startDateInput.placeholder = "Start Date";
+
+                var endDateInput = document.createElement("input");
+                endDateInput.type = "date";
+                endDateInput.id = "endDate";
+                endDateInput.name = "endDate";
+                endDateInput.placeholder = "End Date";
+
+                searchInputContainer.appendChild(startDateInput);
+                searchInputContainer.appendChild(endDateInput);
+            }
+        }
+
+
+        // Function to sort the table by column index
+        function sortTable(columnIndex, initialDirection = "asc") {
+            var table, rows, switching, i, x, y, shouldSwitch, switchcount = 0;
+            table = document.getElementById("bookingsTable");
+            switching = true;
+            var direction = initialDirection.toLowerCase();
+
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("td")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+
+                    var xValue, yValue;
+
+                    if (columnIndex === 0) {
+                        // For Booking ID column, skip sorting
+                        xValue = Number(x.innerHTML);
+                        yValue = Number(y.innerHTML);
+                    } else {
+                        // For other columns, compare as strings
+                        xValue = x.innerHTML.toLowerCase();
+                        yValue = y.innerHTML.toLowerCase();
+                    }
+
+                    if (direction === "asc" && xValue < yValue) {
+                        shouldSwitch = true;
+                        break;
+                    } else if (direction === "desc" && xValue > yValue) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount === 0 && direction === "asc") {
+                        // If no switching occurred and the direction is ascending, switch to descending
+                        direction = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Set the initial sorting based on Booking ID in ascending order
+            sortTable(0, "asc");
+        });
+    </script>
+
+
+
+
     <script src="js/jquery.min.js"></script>
     <script src="js/popper.js"></script>
     <script src="js/bootstrap.min.js"></script>

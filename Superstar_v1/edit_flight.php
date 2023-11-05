@@ -46,7 +46,7 @@
         exit();
     }
 
-    include 'includes/Managerheader.inc';
+    include 'includes/Managerheader_ori.inc';
 
     // Check if the 'flights' table exists, create it if not
     $checkFlightsTableQuery = "SHOW TABLES LIKE 'flights'";

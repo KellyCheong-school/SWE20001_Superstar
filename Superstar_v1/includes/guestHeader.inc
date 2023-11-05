@@ -414,8 +414,8 @@
                                 <a href="manager_login.php" class="dropdown-item">as Manager</a>
                             </div>
                         </li>
-                        <li><a href="index.php" class="nav-item nav-link active">Register</a></li>
-
+                        <li><a href="member_registration.php" class="nav-item nav-link">Register</a></li>
+                        <li><a href="aboutUs.php" class="nav-item nav-link">About Us</a></li>
                        
                        
 

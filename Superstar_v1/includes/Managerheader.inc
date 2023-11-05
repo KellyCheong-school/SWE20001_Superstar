@@ -406,8 +406,8 @@
                 </button>
                 <div id="main-nav" class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
-                        <li><a href="manager.php" class="nav-item nav-link active">Home</a></li>
-                        <li><a href="manager_registration.php" class="nav-item nav-link active">Register</a></li>
+                        <li><a href="manager.php" class="nav-item nav-link">Home</a></li>
+                        <li><a href="manager_registration.php" class="nav-item nav-link">Register</a></li>
                         <li class="dropdown">
                             <a href="#" class="nav-item nav-link" data-toggle="dropdown">Manage</a>
                             <div class="dropdown-menu">

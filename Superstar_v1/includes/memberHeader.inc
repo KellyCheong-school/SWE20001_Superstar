@@ -406,7 +406,7 @@
                 </button>
                 <div id="main-nav" class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
-                <li><a href="memberPage.php" class="nav-item nav-link active">Home</a></li>
+                <li><a href="memberPage.php" class="nav-item nav-link">Home</a></li>
                 <li><a href="product.php" class="nav-item nav-link">Flights</a></li>
                 <li><a href="enquire.php" class="nav-item nav-link">Booking</a></li>
                         <li class="dropdown">
