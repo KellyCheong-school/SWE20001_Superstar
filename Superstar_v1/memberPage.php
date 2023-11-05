@@ -38,10 +38,10 @@
 </head>
 
 <body>
+
     <?php
     require_once('settings.php');
     session_start();
-
 
     // Check if the user is logged in
     if (isset($_SESSION['member_id'])) {
@@ -71,6 +71,7 @@
     $row1 = mysqli_fetch_array($query1);
     $row2 = mysqli_fetch_array($query1);
     ?>
+
     <br><br><br>
 
 
