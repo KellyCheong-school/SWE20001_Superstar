@@ -413,7 +413,7 @@
                             <div class="dropdown-menu">
                                 <a href="create_destination.php" class="dropdown-item">Destination</a>
                                 <a href="create_flight.php" class="dropdown-item">Flight</a>
-                                <a "create_promotions.php" class="dropdown-item">Promotion</a>
+                                <a href="create_promotions.php" class="dropdown-item">Promotion</a>
                             </div>
                         </li>
                         <li class="dropdown">

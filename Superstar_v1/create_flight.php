@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <title>AeroStar - Create Flight</title>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="This is the payment page for AeroStar.">
+    <meta name="keywords" content="AeroStar, Payment">
+    <meta name="author" content="Jason Tan">
+    <title>Manager Page</title>
     <link href="images/AeroStarLogo-Header.jpg" rel="icon">
-    <link href="styles/style.css" rel="stylesheet">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800');
+        @import url('https://fonts.googleapis.com/css?family=Lobster');
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* input[readonly].form-control {
+            color:#282828;
+        } */
+    </style>
 </head>
 
 <body>
@@ -123,94 +143,136 @@
     $getDestinationNamesQuery = "SELECT destinationname FROM destination";
     $destinationNamesResult = mysqli_query($conn, $getDestinationNamesQuery);
 
-    $destinationOptions = '<option value="" disabled selected>Select Destination</option>'; // Set the default value to an empty string
+    $destinationOptions = '<option value="" style="color:black;" disabled selected>Select Destination</option>'; // Set the default value to an empty string
     if ($destinationNamesResult && mysqli_num_rows($destinationNamesResult) > 0) {
         while ($row = mysqli_fetch_assoc($destinationNamesResult)) {
             $destinationName = $row['destinationname'];
             $destinationPrice = getDestinationPrice($conn, $destinationName); // Use a different variable here
-            $destinationOptions .= "<option value=\"$destinationName\" data-price=\"$destinationPrice\">$destinationName</option>";
+            $destinationOptions .= "<option style='color:black;' value=\"$destinationName\" data-price=\"$destinationPrice\">$destinationName</option>";
         }
     } else {
         echo "Error: No destination names found.";
     }
 
     ?>
+    <?php include 'includes/Managerheader.inc'; ?>
+    <br><br><br><br>
+    <div class="container mt-4">
+        <h2 class="heading-section">Create Flight</h2>
+        <br>
+        <div class="mx-auto">
+            <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <fieldset>
+                    <div class="form-group row">
+                        <label for="departureDateTime" style="color:#fff;" class="col-sm-3 col-form-label">Departure
+                            Date and Time:</label>
+                        <div class="col-sm-8">
+                            <input type="datetime-local" name="departureDateTime" id="departureDateTime" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="arrivalDateTime" style="color:#fff;" class="col-sm-3 col-form-label">Arrival Date
+                            and Time:</label>
+                        <div class="col-sm-8">
+                            <input type="datetime-local" name="arrivalDateTime" id="arrivalDateTime" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="from" style="color:#fff;" class="col-sm-3 col-form-label">From:</label>
+                        <div class="col-sm-8">
+                            <input class="form-control-plaintext" style="font-size: 11pt; color:#fff;" type="text"
+                                name="from" id="from" value="Kuala Lumpur, Malaysia" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="to" style="color:#fff;" class="col-sm-3 col-form-label">To:</label>
+                        <div class="col-sm-8">
+                            <select name="to" id="to" required onchange="updatePrice()"
+                                style="font-size: 11pt; color:black;" class="form-control form-control-lg">
+                                <?php echo $destinationOptions; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="duration" style="color:#fff;" class="col-sm-3 col-form-label">Duration:</label>
+                        <div class="col-sm-4">
+                            <input style="font-size: 11pt;" class="form-control" type="number" name="hours" id="hours"
+                                min="0" max="23" placeholder="HH" required>
+                        </div>
+                        <span style="color:#fff;">:</span>
+                        <div class="col-sm-4">
+                            <input style="font-size: 11pt;" class="form-control" type="number" name="minutes"
+                                id="minutes" min="0" max="59" placeholder="MM" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="price" style="color:#fff;" class="col-sm-3 col-form-label">Price: RM</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="price" id="price" class="form-control-plaintext"
+                                style="font-size: 11pt; color:#fff;" value="<?php echo isset($price) ? $price : '0'; ?>"
+                                readonly>
+                        </div>
 
-    <div class="form-container">
-        <h2>Create Flight</h2>
-        <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <label for="departureDateTime">Departure Date and Time:</label>
-            <input type="datetime-local" name="departureDateTime" id="departureDateTime" required>
+                    </div>
+                </fieldset>
+                <button type="submit" class="form-control btn btn-primary submit w-25">Create</button>
+            </form>
+        </div>
 
-            <label for="arrivalDateTime">Arrival Date and Time:</label>
-            <input type="datetime-local" name="arrivalDateTime" id="arrivalDateTime" required>
-            <br>
-            <label for="from">From:</label>
-            <input type="text" name="from" id="from" value="Kuala Lumpur, Malaysia" readonly>
+        <br><br>
 
-            <label for="to">To:</label>
-            <select name="to" id="to" required onchange="updatePrice()">
-                <?php echo $destinationOptions; ?>
-            </select>
 
-            <label for="duration">Duration:</label>
-            <div id="duration-container">
-                <label for="hours">Hours:</label>
-                <input type="number" name="hours" id="hours" min="0" max="23" placeholder="HH" required>
-                <span>:</span>
-                <label for="minutes">Minutes:</label>
-                <input type="number" name="minutes" id="minutes" min="0" max="59" placeholder="MM" required>
+        <hr>
+        <h2 class="heading-section">List of Flight</h2>
+
+        <br>
+        <!-- Add a row element for the order table -->
+        <div class="row">
+            <!-- Add a column element for the order table -->
+            <div class="col-md-12">
+
+                <?php
+                // Retrieve and display flights
+                $getFlightsQuery = "SELECT * FROM flights";
+                $flightsResult = mysqli_query($conn, $getFlightsQuery);
+
+                if ($flightsResult && mysqli_num_rows($flightsResult) > 0) {
+                    echo '<table  class="table table-striped table-bordered" style="color:#fff;">';
+                    echo '<tr>';
+                    echo '<th>Departure</th>';
+                    echo '<th>Arrival</th>';
+                    echo '<th>From</th>';
+                    echo '<th>To</th>';
+                    echo '<th>Duration (minutes)</th>';
+                    echo '<th>Price (RM)</th>';
+                    echo '<th>Edit</th>';
+                    echo '<th>Delete</th>';
+                    echo '</tr>';
+
+                    while ($row = mysqli_fetch_assoc($flightsResult)) {
+                        echo '<tr>';
+                        echo '<td>' . $row['departure_datetime'] . '</td>';
+                        echo '<td>' . $row['arrival_datetime'] . '</td>';
+                        echo '<td>' . $row['departure_city'] . '</td>';
+                        echo '<td>' . $row['arrival_city'] . '</td>';
+                        echo '<td>' . $row['duration'] . '</td>';
+                        echo '<td>' . $row['price'] . '</td>';
+                        echo '<td><a href="edit_flight.php?id=' . $row['id'] . '" onclick="editFlight(event)">Edit</a></td>';
+                        echo '<td><a href="delete_flight.php?id=' . $row['id'] . '">Delete</a></td>';
+                        echo '</tr>';
+                    }
+                    echo '</table>';
+                } else {
+                    echo 'No flights available.';
+                }
+                ?>
             </div>
-            <br>
-            <label for="price">Price: RM</label>
-            <input type="text" name="price" id="price" value="<?php echo isset($price) ? $price : '0'; ?>" readonly>
-
-            <input type="submit" value="Create Flight">
-        </form>
+        </div>
+        <br><br>
+        <a href="#top" class="back-to-top">Back to Top</a><br><br><br>
     </div>
 
-    <div class="flight-list">
-        <h2>Flight List</h2>
-        <?php
-        // Retrieve and display flights
-        $getFlightsQuery = "SELECT * FROM flights";
-        $flightsResult = mysqli_query($conn, $getFlightsQuery);
-
-        if ($flightsResult && mysqli_num_rows($flightsResult) > 0) {
-            echo '<table border="1">';
-            echo '<tr>';
-            echo '<th>Departure</th>';
-            echo '<th>Arrival</th>';
-            echo '<th>From</th>';
-            echo '<th>To</th>';
-            echo '<th>Duration (minutes)</th>';
-            echo '<th>Price (RM)</th>';
-            echo '<th>Edit</th>';
-            echo '<th>Delete</th>';
-            echo '</tr>';
-
-            while ($row = mysqli_fetch_assoc($flightsResult)) {
-                echo '<tr>';
-                echo '<td>' . $row['departure_datetime'] . '</td>';
-                echo '<td>' . $row['arrival_datetime'] . '</td>';
-                echo '<td>' . $row['departure_city'] . '</td>';
-                echo '<td>' . $row['arrival_city'] . '</td>';
-                echo '<td>' . $row['duration'] . '</td>';
-                echo '<td>' . $row['price'] . '</td>';
-                echo '<td><a href="edit_flight.php?id=' . $row['id'] . '" onclick="editFlight(event)">Edit</a></td>';
-                echo '<td><a href="delete_flight.php?id=' . $row['id'] . '">Delete</a></td>';
-                echo '</tr>';
-            }
-            echo '</table>';
-        } else {
-            echo 'No flights available.';
-        }
-        ?>
-    </div>
-
-    <a href="#top" class="back-to-top">Back to Top</a><br><br><br>
     <hr>
-    <?php include 'includes/footer.inc'; ?>
     <script>
         function updatePrice() {
             var select = document.getElementById('to');
@@ -250,10 +312,14 @@
         }
 
         function editFlight(event) {
-        event.preventDefault();
-        window.open(event.target.href, 'Edit Flight', 'width=600,height=500');
+            event.preventDefault();
+            window.open(event.target.href, 'Edit Flight', 'width=600,height=500');
         }
     </script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
 </body>
 
 </html>
