@@ -4,3 +4,6 @@
 	$pwd = "root";
 	$sql_db = "flightbooking";
 ?>
+	
+	
+	

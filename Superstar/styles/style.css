@@ -133,23 +133,28 @@ nav .dropdown:hover .dropdown-menu {
   text-align: center;
 }
 
-/*.flights table: sets the border collapse and width for the table.*/
-.flights table {
-  border-collapse: collapse;
-  width: 100%;
+/* Center the table horizontally and vertically */
+.flights {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Add this line to center horizontally */
+  text-align: center;
 }
 
-/*.flights th: sets the padding, background color, and border collapse for the table header in flights page.*/
+.flights table {
+  border-collapse: collapse;
+  width: 50%; /* Adjust the width as needed */
+  margin-right: 20px; /* Add some margin to separate the table and .flight-content */
+}
+
 .flights th {
   padding: 10px;
   background-color: rgba(173, 216, 230, 0.5);
   border-collapse: collapse;
 }
 
-/*.flights td: sets the width, text alignment, padding, border, background color, and border collapse for the table data 
-  in flights page.*/
 .flights td {
-  width: 25%;
+  width: 50%;
   text-align: center;
   padding: 8px;
   border: none;
@@ -157,7 +162,6 @@ nav .dropdown:hover .dropdown-menu {
   border-collapse: collapse;
 }
 
-/*.flights table td p: sets the font color, margin, opacity, padding, and border for the table data paragraphs in flights page.*/
 .flights table td p {
   color: black;
   margin: 5px;
@@ -165,6 +169,75 @@ nav .dropdown:hover .dropdown-menu {
   opacity: 0.8;
   padding: 20px;
 }
+
+.flight-content {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.flight-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.flight-image img {
+  width: 100%;
+  height: auto;
+  filter: blur(0); /* Initially no blur */
+  transition: filter 0.3s; /* Smooth transition for the blur effect */
+}
+
+.flight-content:hover .flight-image img {
+  filter: blur(5px); /* Blur the image on hover */
+}
+
+
+.destination-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.flight-content:hover .destination-info {
+  opacity: 1;
+}
+
+.destination-info h3 {
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.destination-info p {
+  color: #666;
+  margin: 5px 0;
+}
+
+.view-more {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  margin-top: 5px;
+  transition: background-color 0.3s;
+}
+
+.view-more:hover {
+  background-color: #45a049;
+}
+
+
 
 /*a: sets the color for all links.*/
 a {

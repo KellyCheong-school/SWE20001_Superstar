@@ -1,16 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japan</title>
-    <link href="images/AeroStarLogo-Header.jpg" rel="icon">
+<title>Tokyo, Japan</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="./images/logo(icon).png" rel="icon">
+  <style type="text/css">
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800');
+        @import url('https://fonts.googleapis.com/css?family=Lobster');
 
-    <link href = "styles/style2.css" rel = "stylesheet">
-    <link href = "styles/enhancements.css" rel = "stylesheet">
+    body {
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    body h1 {
+        color: #fff; 
+    }
+
+    .enhancements ol {
+    margin-left: 0;
+  }
+
+  .enhancements ol{
+    margin-left: -25px;
+  }
+
+  .container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.enhancements img {
+  width: 700px;
+  height: 350px;
+}
+
+.box {
+  display: inline-block;
+  width: 300px;
+  margin: 20px;
+  text-align: center;
+}
+
+.box img {
+  max-width: 100%;
+  height: auto;
+}
+
+.box p {
+  margin-top: 10px;
+}
+
+
+    </style> 
 </head>
+
 <body>
-<?php include 'includes/header.inc'; ?>
+<?php include 'includes/memberHeader.inc'; ?>
+<br><br><br>
+
     <section class="enhancements">
     <h1>Japan</h1>
     <img src="images/mountFuji.jpeg" alt="Mount Fuji"><br>
@@ -20,6 +70,9 @@
     </p>
     <p>Source: <u><a href="https://www.japan-guide.com/e/e2172.html">Japan Guide</a></u></p>
     </section>
+
+    <br><br>
+    
     <h1>Travel Highlights</h1>
     <p>Japan is a vibrant and modern city-state that offers a wide range of attractions and activities for travelers. Here are some of the top travel highlights in Japan!
     </p>
@@ -39,7 +92,11 @@
             <p>Hiroshima today is a forward-thinking city with attractive, leafy boulevards. It's not until you visit the Peace Memorial Museum that the true extent of human tragedy wreaked by the atomic bomb becomes vividly clear.</p>
         </div>
     </div>
-    <?php include 'includes/footer.inc'; ?>
+
+<p style="text-align:center">
+  <a href="#top" class="back-to-top">Back to Top</a><br><br><br>
+</p>
+
 </body>
 
 </html>

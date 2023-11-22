@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+
     <style type="text/css">
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800');
         @import url('https://fonts.googleapis.com/css?family=Lobster');
@@ -406,25 +407,21 @@
                 </button>
                 <div id="main-nav" class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
-                        <li><a href="manager.php" class="nav-item nav-link">Home</a></li>
-                        <li><a href="manager_registration.php" class="nav-item nav-link">Register</a></li>
+
+                <li><a href="memberPage.php" class="nav-item nav-link">Home</a></li>
+                <li><a href="product.php" class="nav-item nav-link">Flights</a></li>
+                <li class="dropdown">
+                <a href="#" class="nav-item nav-link" data-toggle="dropdown">Booking</a>
+                    <div class="dropdown-menu">
+                        <a href="enquire.php" class="dropdown-item">Book Now</a>
+                        <a href="viewBooking.php" class="dropdown-item">View Booking</a>
+                </li>
                         <li class="dropdown">
-                            <a href="#" class="nav-item nav-link" data-toggle="dropdown">Manage</a>
+                            <a href="#" class="nav-item nav-link" data-toggle="dropdown"><?php echo 'User: '.htmlspecialchars($username);?> </a>
                             <div class="dropdown-menu">
-                                <a href="create_destination.php" class="dropdown-item">Destination</a>
-                                <a href="create_flight.php" class="dropdown-item">Flight</a>
-                                <a href="create_promotions.php" class="dropdown-item">Promotion</a>
+                                <a href="member_logout.php" class="dropdown-item">Logout</a>
                             </div>
                         </li>
-                        <li class="dropdown">
-                            <a href="#" class="nav-item nav-link" data-toggle="dropdown"><?php echo 'Manager: '.htmlspecialchars($username);?> </a>
-                            <div class="dropdown-menu">
-                                <a href="manager_logout.php" class="dropdown-item">Logout</a>
-                            </div>
-                        </li>
-                       
-                       
-                       
 
                     </ul>
                 </div>
