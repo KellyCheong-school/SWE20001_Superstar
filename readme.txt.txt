@@ -1,5 +1,5 @@
 Steps to launch the website:
-1. Download/Clone this repository
+1. Download/Clone this repository (main branch)
 2. Install MAMP application for Windows
 3. Paste the "Superstar" folder in MAMP directory (i.e., C:\MAMP\htdocs)
 4. Launch MAMP application (make sure Apache Server & MySQL Server is turned on)
